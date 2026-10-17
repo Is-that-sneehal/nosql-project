@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+
+{% block title %}Articles & Papers - Aetheria Library{% endblock %}
+
+{% block content %}
+<div class="space-y-8">
+
+  <!-- Header Banner -->
+  <div class="relative overflow-hidden bg-gradient-to-r from-slate-900 via-violet-950/40 to-slate-900 border border-slate-800 p-8 rounded-3xl shadow-xl">
+    <div class="max-w-2xl">
+      <span class="inline-block px-2.5 py-1 rounded-full bg-violet-500/10 border border-violet-500/20 text-violet-400 text-[10px] font-bold uppercase tracking-wider mb-2">
+        Member Portal &bull; Research
+      </span>
+      <h1 class="text-3xl font-extrabold text-white tracking-tight">
+        Articles & Extractive Summaries
+      </h1>
+      <p class="text-xs text-slate-400 mt-2 leading-relaxed">
+        Explore scientific, medical, and technology articles. Get 4-sentence extractive executive summaries instantly via sumy's TextRank algorithm.
+      </p>
+
+      <!-- Search bar -->
+      <form method="GET" action="{{ url_for('member_articles') }}" class="mt-6 flex gap-2 max-w-lg">
+        <input type="text" name="q" value="{{ query or '' }}" placeholder="Search by title or publication source..."
+          class="flex-1 px-4 py-2.5 bg-slate-950/80 border border-slate-700/80 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-violet-500 transition">
+        <button type="submit"
+          class="px-5 py-2.5 bg-violet-600 hover:bg-violet-500 text-white rounded-xl text-xs font-semibold shadow-md shadow-violet-600/30 transition">
+          Search
+        </button>
+        {% if query %}
+          <a href="{{ url_for('member_articles') }}" class="px-3.5 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-semibold transition flex items-center">
+            Clear
+          </a>
+        {% endif %}
+      </form>
+    </div>
+  </div>
+
+  <!-- Articles Grid -->
+  <div>
+    {% if articles %}
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {% for article in articles %}
+          <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-6 flex flex-col justify-between hover:border-violet-500/40 hover:shadow-xl hover:shadow-violet-500/5 transition group">
+            <div>
+              <div class="flex items-center justify-between mb-3">
+                <span class="px-2.5 py-0.5 rounded-full bg-violet-500/10 text-violet-300 border border-violet-500/20 text-[10px] font-semibold">
+                  {{ article.source or 'Journal' }}
+                </span>
+                <span class="text-[11px] text-slate-500">
+                  {{ article.content_text|length }} chars
+                </span>
+              </div>
+
+              <h2 class="text-base font-bold text-white group-hover:text-violet-300 transition line-clamp-2 leading-snug">
+                {{ article.title }}
+              </h2>
+
+              <p class="text-xs text-slate-400 mt-3 line-clamp-3 leading-relaxed">
+                {{ article.content_text }}
+              </p>
+            </div>
+
+            <div class="mt-6 pt-4 border-t border-slate-800">
+              <a href="{{ url_for('member_article_detail', article_id=article._id) }}"
+                class="w-full flex items-center justify-center gap-1.5 py-2 rounded-xl bg-slate-800 hover:bg-violet-600 text-slate-200 hover:text-white text-xs font-semibold transition duration-200">
+                <span>Read & Summarize</span> &rarr;
+              </a>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="bg-slate-900/40 border border-slate-800 rounded-3xl p-12 text-center text-slate-500">
+        <p class="text-sm font-semibold">No articles found matching your query.</p>
+        <p class="text-xs mt-1">Try another keyword or reset the search filter.</p>
+      </div>
+    {% endif %}
+  </div>
+
+</div>
+{% endblock %}

@@ -1,0 +1,68 @@
+services:
+  mongo:
+    image: mongo:7.0
+    container_name: library_mongo
+    restart: always
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+    networks:
+      - library_net
+
+  redis:
+    image: redis:7.2-alpine
+    container_name: library_redis
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - library_net
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: library_backend
+    restart: always
+    ports:
+      - "8000:8000"
+    environment:
+      - MONGO_URI=mongodb://mongo:27017
+      - MONGO_DB_NAME=library_db
+      - REDIS_URL=redis://redis:6379
+      - JWT_SECRET=super-secret-jwt-key-change-in-production-123456789
+      - TARGET_LANGUAGES=hi,te
+      - SUMMARY_SENTENCES=4
+      - RATE_LIMIT_TRANSLATE=20
+      - RATE_LIMIT_SUMMARIZE=20
+      - RATE_LIMIT_WINDOW=3600
+      - CACHE_TTL_SECONDS=86400
+    depends_on:
+      - mongo
+      - redis
+    networks:
+      - library_net
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: library_frontend
+    restart: always
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    networks:
+      - library_net
+
+volumes:
+  mongo_data:
+  redis_data:
+
+networks:
+  library_net:
+    driver: bridge

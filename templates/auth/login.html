@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block title %}Sign In - Aetheria Library{% endblock %}
+
+{% block content %}
+<div class="max-w-md mx-auto my-12 bg-slate-900/80 border border-slate-800 p-8 rounded-3xl shadow-2xl backdrop-blur-sm">
+  <div class="text-center mb-8">
+    <div class="w-12 h-12 bg-indigo-600/20 text-indigo-400 rounded-2xl flex items-center justify-center mx-auto mb-3 text-2xl font-bold">
+      🔑
+    </div>
+    <h1 class="text-2xl font-extrabold text-white tracking-tight">Welcome Back</h1>
+    <p class="text-xs text-slate-400 mt-1">Sign in with your email and password</p>
+  </div>
+
+  <form method="POST" action="{{ url_for('login') }}" class="space-y-4">
+    <div>
+      <label class="block text-xs font-semibold text-slate-300 mb-1.5">Email Address</label>
+      <input type="email" id="email" name="email" required placeholder="user@example.com"
+        class="w-full px-3.5 py-2.5 bg-slate-950/80 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition">
+    </div>
+
+    <div>
+      <label class="block text-xs font-semibold text-slate-300 mb-1.5">Password</label>
+      <input type="password" id="password" name="password" required placeholder="••••••••"
+        class="w-full px-3.5 py-2.5 bg-slate-950/80 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition">
+    </div>
+
+    <button type="submit"
+      class="w-full py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-xs tracking-wide shadow-lg shadow-indigo-600/30 transition">
+      Sign In
+    </button>
+  </form>
+
+  <!-- Quick Demo Credentials -->
+  <div class="mt-6 pt-5 border-t border-slate-800/80">
+    <p class="text-[11px] font-semibold uppercase tracking-wider text-slate-500 text-center mb-2.5">
+      Quick Demo Logins
+    </p>
+    <div class="grid grid-cols-2 gap-2">
+      <button type="button" onclick="fillCreds('admin@library.com', 'admin123')"
+        class="py-1.5 px-2.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-[11px] font-medium transition text-center border border-slate-700">
+        Demo Admin
+      </button>
+      <button type="button" onclick="fillCreds('member@library.com', 'member123')"
+        class="py-1.5 px-2.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-[11px] font-medium transition text-center border border-slate-700">
+        Demo Member
+      </button>
+    </div>
+  </div>
+
+  <p class="text-center text-xs text-slate-400 mt-6">
+    Don't have an account? <a href="{{ url_for('register') }}" class="text-indigo-400 hover:underline font-semibold">Register here</a>
+  </p>
+</div>
+
+<script>
+  function fillCreds(email, password) {
+    document.getElementById('email').value = email;
+    document.getElementById('password').value = password;
+  }
+</script>
+{% endblock %}
