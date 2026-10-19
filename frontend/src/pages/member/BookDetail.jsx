@@ -128,6 +128,9 @@ export const BookDetail = () => {
         bookId={id}
         title={book.title}
         hasContent={Boolean(book.content_text)}
+        contentText={book.content_text || ''}
+        translatedText={translationResult?.translated_text}
+        translatedLang={translationResult ? selectedLang : null}
       />
 
       {/* Translation Toolbar */}

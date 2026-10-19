@@ -326,3 +326,35 @@ class TestChunking:
         from app.services.translation import _chunk_text
         chunks = _chunk_text("")
         assert len(chunks) == 1
+
+
+class TestAudioService:
+    """Tests for the offline TTS audio service and Linux fallback behavior."""
+
+    def test_audio_filepath(self):
+        from app.services.audio import get_audio_filepath
+        path = get_audio_filepath("60d5ec49f1b2c8b1f8e4e1a1")
+        assert path.endswith("book_60d5ec49f1b2c8b1f8e4e1a1.wav")
+
+    def test_audio_not_ready_for_nonexistent_file(self):
+        from app.services.audio import is_audio_ready
+        assert is_audio_ready("nonexistent_id_12345") is False
+
+    def test_is_tts_available_boolean(self):
+        from app.services.audio import is_tts_available
+        assert isinstance(is_tts_available(), bool)
+
+    def test_delete_nonexistent_audio_does_not_crash(self):
+        from app.services.audio import delete_book_audio
+        # Should not raise any exception
+        delete_book_audio("nonexistent_id_99999")
+
+    @pytest.mark.asyncio
+    async def test_generate_raises_when_tts_unavailable(self, monkeypatch):
+        import app.services.audio as audio_mod
+        monkeypatch.setattr(audio_mod, "_PYTTSX3_AVAILABLE", False)
+
+        with pytest.raises(RuntimeError) as exc_info:
+            await audio_mod.generate_book_audio("test_id", "Some book content")
+        assert "not available" in str(exc_info.value)
+

@@ -4,7 +4,6 @@ Book listing, detail, and translation endpoints.
 
 import math
 
-import os
 from bson import ObjectId
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from fastapi.responses import FileResponse
@@ -13,13 +12,23 @@ from app.core.config import settings
 from app.core.dependencies import get_current_user, require_member
 from app.db.mongodb import get_database
 from app.db.redis import get_redis
-from app.models.book import BookListItem, BookListResponse, BookResponse, TranslationResponse, BookAudioResponse
+from app.models.book import (
+    BookListItem,
+    BookListResponse,
+    BookResponse,
+    TranslationResponse,
+    BookAudioResponse,
+)
 from app.services.rate_limiter import check_rate_limit
 from app.services.translation import translate_text
-from app.services.audio import is_audio_ready, generate_book_audio, get_audio_filepath
+from app.services.audio import (
+    is_audio_ready,
+    is_tts_available,
+    generate_book_audio,
+    get_audio_filepath,
+)
 
 router = APIRouter(prefix="/books", tags=["Books"])
-
 
 
 @router.get("", response_model=BookListResponse)
@@ -171,6 +180,7 @@ async def get_book_audio_status(
         book_id=book_id,
         audio_ready=ready,
         audio_url=f"/books/{book_id}/audio/stream",
+        tts_available=is_tts_available(),
     )
 
 
@@ -195,6 +205,12 @@ async def generate_audio_for_book(
     if not content:
         raise HTTPException(status_code=400, detail="Book has no content text to read.")
 
+    if not is_tts_available():
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="Server-side audio generation is not available in this environment. Please use browser speech narration.",
+        )
+
     try:
         await generate_book_audio(book_id, content)
     except Exception as e:
@@ -207,6 +223,7 @@ async def generate_audio_for_book(
         book_id=book_id,
         audio_ready=True,
         audio_url=f"/books/{book_id}/audio/stream",
+        tts_available=is_tts_available(),
     )
 
 

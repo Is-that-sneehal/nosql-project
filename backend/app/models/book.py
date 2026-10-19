@@ -82,4 +82,5 @@ class BookAudioResponse(BaseModel):
     book_id: str
     audio_ready: bool
     audio_url: str
+    tts_available: bool = False
 

@@ -10,11 +10,13 @@ bcrypt==4.2.0
 deep-translator==1.11.4
 tenacity==8.5.0
 sumy==0.11.0
+numpy==1.26.4
 nltk==3.9.1
 pymongo==4.8.0
 httpx==0.27.0
 pytest==8.3.2
 pytest-asyncio==0.23.8
-pyttsx3>=2.90
-pywin32>=308
+fakeredis[lua]==2.21.0
 
+# Optional: Windows-only TTS (install manually on Windows for server-side audio)
+# pip install pyttsx3>=2.90 pywin32>=308

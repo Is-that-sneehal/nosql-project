@@ -40,7 +40,7 @@ def create_access_token(data: Dict[str, Any], expires_delta: Optional[timedelta]
         expires_delta or timedelta(minutes=settings.JWT_ACCESS_EXPIRE_MINUTES)
     )
     to_encode.update({"exp": expire, "type": "access"})
-    return jwt.encode(to_encode, settings.JWT_SECRET, algorithm=settings.JWT_ALGORITHM)
+    return jwt.encode(to_encode, settings.effective_jwt_secret, algorithm=settings.JWT_ALGORITHM)
 
 
 def create_refresh_token(data: Dict[str, Any], expires_delta: Optional[timedelta] = None) -> str:
@@ -50,7 +50,7 @@ def create_refresh_token(data: Dict[str, Any], expires_delta: Optional[timedelta
         expires_delta or timedelta(days=settings.JWT_REFRESH_EXPIRE_DAYS)
     )
     to_encode.update({"exp": expire, "type": "refresh"})
-    return jwt.encode(to_encode, settings.JWT_SECRET, algorithm=settings.JWT_ALGORITHM)
+    return jwt.encode(to_encode, settings.effective_jwt_secret, algorithm=settings.JWT_ALGORITHM)
 
 
 def decode_token(token: str) -> Dict[str, Any]:
@@ -58,4 +58,4 @@ def decode_token(token: str) -> Dict[str, Any]:
     Decode and verify a JWT token.
     Raises jwt.ExpiredSignatureError or jwt.InvalidTokenError on failure.
     """
-    return jwt.decode(token, settings.JWT_SECRET, algorithms=[settings.JWT_ALGORITHM])
+    return jwt.decode(token, settings.effective_jwt_secret, algorithms=[settings.JWT_ALGORITHM])
