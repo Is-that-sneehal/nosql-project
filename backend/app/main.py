@@ -1,3 +1,4 @@
+
 """
 FastAPI application entry point.
 """
@@ -15,26 +16,32 @@ from app.routers import auth, admin, books, articles
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Manage startup and shutdown of database connections."""
-    # Startup
     await connect_mongodb()
     await connect_redis()
     yield
-    # Shutdown
     await close_mongodb()
     await close_redis()
 
 
 app = FastAPI(
     title="Library Management System",
-    description="A full-stack library management system with book translation and article summarization.",
+    description=(
+        "A full-stack library management system with "
+        "book translation and article summarization."
+    ),
     version="1.0.0",
     lifespan=lifespan,
 )
 
-# CORS — allow the React frontend
+# CORS: allow local development and the deployed Vercel frontend
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000", "http://localhost:5173", "http://frontend:3000"],
+    allow_origins=[
+        "http://localhost:3000",
+        "http://localhost:5173",
+        "http://frontend:3000",
+        "https://nosql-project-plum.vercel.app",
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -49,7 +56,10 @@ app.include_router(articles.router)
 
 @app.get("/", tags=["Health"])
 async def root():
-    return {"status": "ok", "message": "Library Management System API"}
+    return {
+        "status": "ok",
+        "message": "Library Management System API",
+    }
 
 
 @app.get("/health", tags=["Health"])
